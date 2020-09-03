@@ -18,8 +18,12 @@ class LoginBloc with Validators {
       Rx.combineLatest2(emailStream, passStream, (e, p) => true);
 
   // Insertar valores al stream
-  Function(String) get email => _emailController.sink.add;
-  Function(String) get pass => _passController.sink.add;
+  Function(String) get changeEmail => _emailController.sink.add;
+  Function(String) get changePass => _passController.sink.add;
+
+  //Getters
+  String get email => _emailController.value;
+  String get pass => _passController.value;
 
   dispose() {
     _emailController?.close();
