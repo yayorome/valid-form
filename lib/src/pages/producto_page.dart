@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:formbloc/src/model/product_model.dart';
+import 'package:formbloc/src/providers/product_provider.dart';
 import 'package:formbloc/src/utils/utils.dart';
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
+  @override
+  _ProductPageState createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
   final formKey = GlobalKey<FormState>();
+  ProductModel productModel = new ProductModel();
+  ProductProvider productProvider = new ProductProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +38,7 @@ class ProductPage extends StatelessWidget {
               children: [
                 _createName(),
                 _createPrice(),
+                _isAvailable(),
                 SizedBox(
                   height: 10,
                 ),
@@ -43,18 +53,22 @@ class ProductPage extends StatelessWidget {
 
   Widget _createName() {
     return TextFormField(
+      initialValue: productModel.title,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(labelText: 'Producto'),
+      onSaved: (newValue) => productModel.title = newValue,
       validator: (value) {
-        return value.length > 3 ? 'Ingrese nombre de producto' : null;
+        return value.length < 3 ? 'Ingrese nombre de producto' : null;
       },
     );
   }
 
   Widget _createPrice() {
     return TextFormField(
+      initialValue: productModel.value.toString(),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(labelText: 'Precio'),
+      onSaved: (newValue) => productModel.value = double.parse(newValue),
       validator: (value) {
         return isNumeric(value) ? null : 'Solo numeros';
       },
@@ -73,7 +87,22 @@ class ProductPage extends StatelessWidget {
         label: Text('Guardar'));
   }
 
+  Widget _isAvailable() {
+    return SwitchListTile(
+      value: productModel.availability,
+      title: Text('Disponible'),
+      activeColor: Colors.deepPurple,
+      onChanged: (value) => setState(() {
+        productModel.availability = value;
+      }),
+    );
+  }
+
   void _submit() {
-    formKey.currentState.validate();
+    if (!formKey.currentState.validate()) {
+      return;
+    }
+    formKey.currentState.save();
+    productProvider.createProduct(productModel);
   }
 }

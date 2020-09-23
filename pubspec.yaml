@@ -32,6 +32,9 @@ dependencies:
   # RxDart
   rxdart: ^0.24.1
 
+  # Http
+  http: 
+
 
 dev_dependencies:
   flutter_test:
