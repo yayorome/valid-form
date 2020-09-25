@@ -10,14 +10,14 @@ class ProductProvider {
   Future<bool> createProduct(ProductModel product) async {
     final url = '$_baseUrl/products.json';
     final response = await http.post(url, body: productModelToJson(product));
-    final data = json.decode(response.body);
+    // final data = json.decode(response.body);
     return response.statusCode == 200;
   }
 
   Future<bool> editProduct(ProductModel product) async {
     final url = '$_baseUrl/products/${product.id}.json';
     final response = await http.put(url, body: productModelToJson(product));
-    final data = json.decode(response.body);
+    // final data = json.decode(response.body);
     return response.statusCode == 200;
   }
 

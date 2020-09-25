@@ -45,17 +45,31 @@ class HomePage extends StatelessWidget {
 
   Widget _createItem(BuildContext context, ProductModel product) {
     return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-      ),
-      onDismissed: (direction) => productProvider.deleteProduct(product.id),
-      child: ListTile(
-        title: Text('${product.title} - ${product.value}'),
-        subtitle: Text(product.id),
-        onTap: () =>
-            Navigator.pushNamed(context, 'product', arguments: product),
-      ),
-    );
+        key: UniqueKey(),
+        background: Container(
+          color: Colors.red,
+        ),
+        onDismissed: (direction) => productProvider.deleteProduct(product.id),
+        child: Card(
+          child: Column(
+            children: [
+              (product.photoUrl == null)
+                  ? Image(image: AssetImage('assets/img/no-image.png'))
+                  : FadeInImage(
+                      placeholder: AssetImage('assets/img/jar-loading.gif'),
+                      image: NetworkImage(product.photoUrl),
+                      height: 300,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+              ListTile(
+                title: Text('${product.title} - ${product.value}'),
+                subtitle: Text(product.id),
+                onTap: () =>
+                    Navigator.pushNamed(context, 'product', arguments: product),
+              ),
+            ],
+          ),
+        ));
   }
 }

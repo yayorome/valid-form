@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "816903439605",
+    "firebase_url": "https://flutter-demo-3fdad.firebaseio.com",
+    "project_id": "flutter-demo-3fdad",
+    "storage_bucket": "flutter-demo-3fdad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816903439605:android:b408308ab81a92622171bc",
+        "android_client_info": {
+          "package_name": "mx.com.yit.validform"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816903439605-jecc6en0l9phl3robs53s0joa0u2m4jp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbtyFafb_an9reuhyR2snFFZYHhtWkhoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816903439605-jecc6en0l9phl3robs53s0joa0u2m4jp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

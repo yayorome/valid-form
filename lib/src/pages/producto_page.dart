@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:formbloc/src/model/product_model.dart';
+import 'package:formbloc/src/model/storage_result_model.dart';
 import 'package:formbloc/src/providers/product_provider.dart';
+import 'package:formbloc/src/providers/storage_provider.dart';
 import 'package:formbloc/src/utils/utils.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProductPage extends StatefulWidget {
   @override
@@ -10,8 +15,12 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final formKey = GlobalKey<FormState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   ProductModel productModel = new ProductModel();
   ProductProvider productProvider = new ProductProvider();
+  StorageProvider storageProvider = new StorageProvider();
+  bool _saving = false;
+  File photo;
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +31,17 @@ class _ProductPageState extends State<ProductPage> {
     }
 
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Producto'),
         actions: [
           IconButton(
             icon: Icon(Icons.photo_size_select_actual),
-            onPressed: () {},
+            onPressed: _selectPhoto,
           ),
           IconButton(
             icon: Icon(Icons.camera_alt),
-            onPressed: () {},
+            onPressed: _takePhoto,
           )
         ],
       ),
@@ -42,6 +52,7 @@ class _ProductPageState extends State<ProductPage> {
             key: formKey,
             child: Column(
               children: [
+                _showPhoto(),
                 _createName(),
                 _createPrice(),
                 _isAvailable(),
@@ -88,7 +99,7 @@ class _ProductPageState extends State<ProductPage> {
         ),
         color: Colors.deepPurple,
         textColor: Colors.white,
-        onPressed: _submit,
+        onPressed: (_saving) ? null : _submit,
         icon: Icon(Icons.save),
         label: Text('Guardar'));
   }
@@ -104,11 +115,92 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  void _submit() {
+  void _showSnackBar(String msg) {
+    final snackBar = SnackBar(
+      content: Text(msg),
+      duration: Duration(milliseconds: 1500),
+    );
+
+    scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  void _submit() async {
     if (!formKey.currentState.validate()) {
       return;
     }
     formKey.currentState.save();
-    productProvider.createProduct(productModel);
+
+    setState(() {
+      _saving = true;
+    });
+
+    if (photo != null) {
+      try {
+        StorageResult result = await storageProvider.uploadImage(
+            image: photo, title: productModel.title);
+
+        if (result != null) {
+          productModel.photoUrl = result.imageUrl;
+        }
+      } catch (exception) {
+        _showSnackBar('Ocurrio un error favor de intentar de nuevo');
+      }
+    }
+
+    if (productModel.id == null) {
+      productProvider.createProduct(productModel);
+    } else {
+      productProvider.editProduct(productModel);
+    }
+
+    _showSnackBar('Registro Guardado');
+    setState(() {
+      _saving = false;
+    });
+
+    Navigator.pop(context);
+  }
+
+  Widget _showPhoto() {
+    if (productModel.photoUrl != null) {
+      return FadeInImage(
+          image: NetworkImage(productModel.photoUrl),
+          placeholder: AssetImage('assets/img/jar-loading.gif'),
+          height: 300,
+          fit: BoxFit.contain);
+    } else {
+      if (photo != null) {
+        return Image.file(
+          photo,
+          fit: BoxFit.cover,
+          height: 300.0,
+        );
+      }
+      return Image.asset('assets/img/no-image.png');
+    }
+  }
+
+  void _selectPhoto() {
+    _processPhoto(ImageSource.gallery);
+  }
+
+  void _takePhoto() {
+    _processPhoto(ImageSource.camera);
+  }
+
+  void _processPhoto(ImageSource source) async {
+    final _picker = ImagePicker();
+
+    final pickedFile = await _picker.getImage(
+      source: source,
+    );
+
+    photo = File(pickedFile.path);
+
+    if (photo != null) {
+      productModel.photoUrl = null;
+    }
+
+    setState(() {});
   }
 }
