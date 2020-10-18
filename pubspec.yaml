@@ -41,6 +41,8 @@ dependencies:
   #Firebase Storage
   firebase_storage: ^4.0.0
 
+  #Shared Preferences
+  shared_preferences: ^0.5.12
 
 
 dev_dependencies:

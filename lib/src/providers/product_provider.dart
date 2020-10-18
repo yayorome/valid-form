@@ -1,28 +1,30 @@
 import 'dart:convert';
 
 import 'package:formbloc/src/model/product_model.dart';
+import 'package:formbloc/src/utils/user_prefs.dart';
 
 import 'package:http/http.dart' as http;
 
 class ProductProvider {
   final _baseUrl = 'https://flutter-demo-3fdad.firebaseio.com';
+  final _prefs = new UserPrefs();
 
   Future<bool> createProduct(ProductModel product) async {
-    final url = '$_baseUrl/products.json';
+    final url = '$_baseUrl/products.json?auth=${_prefs.token}';
     final response = await http.post(url, body: productModelToJson(product));
     // final data = json.decode(response.body);
     return response.statusCode == 200;
   }
 
   Future<bool> editProduct(ProductModel product) async {
-    final url = '$_baseUrl/products/${product.id}.json';
+    final url = '$_baseUrl/products/${product.id}.json?auth=${_prefs.token}';
     final response = await http.put(url, body: productModelToJson(product));
     // final data = json.decode(response.body);
     return response.statusCode == 200;
   }
 
   Future<List<ProductModel>> getProducts() async {
-    final url = '$_baseUrl/products.json';
+    final url = '$_baseUrl/products.json?auth=${_prefs.token}';
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -43,7 +45,7 @@ class ProductProvider {
   }
 
   Future<bool> deleteProduct(String id) async {
-    final url = '$_baseUrl/products/$id.json';
+    final url = '$_baseUrl/products/$id.json?auth=${_prefs.token}';
     final resp = await http.delete(url);
     return resp.statusCode == 200;
   }

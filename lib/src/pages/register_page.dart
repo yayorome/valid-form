@@ -3,8 +3,8 @@ import 'package:formbloc/src/providers/auth_provider.dart';
 import 'package:formbloc/src/providers/provider.dart';
 import 'package:formbloc/src/utils/utils.dart';
 
-class LoginPage extends StatelessWidget {
-  final AuthProvider authProvider = AuthProvider();
+class RegisterPage extends StatelessWidget {
+  final authProvider = AuthProvider();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +97,7 @@ class LoginPage extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Ingreso',
+                  'Crear Cuenta',
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 60),
@@ -110,9 +110,8 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           FlatButton(
-              child: Text('Crear cuenta'),
-              onPressed: () =>
-                  Navigator.pushReplacementNamed(context, 'register')),
+              child: Text('Si ya tienes cuenta, ve a Login'),
+              onPressed: () => Navigator.pushReplacementNamed(context, '/')),
           SizedBox(height: 100)
         ],
       ),
@@ -172,23 +171,24 @@ class LoginPage extends StatelessWidget {
           return RaisedButton(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                child: Text('Ingresar'),
+                child: Text('Crear Cuenta'),
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5)),
               elevation: 0,
               color: Colors.deepPurple,
               textColor: Colors.white,
-              onPressed: snapshot.hasData ? () => _login(bloc, context) : null);
+              onPressed:
+                  snapshot.hasData ? () => _register(bloc, context) : null);
         });
   }
 
-  _login(LoginBloc bloc, BuildContext context) async {
-    final response = await authProvider.login(bloc.email, bloc.pass);
+  _register(LoginBloc bloc, BuildContext context) async {
+    final response = await authProvider.createUser(bloc.email, bloc.pass);
     if (response['ok']) {
       Navigator.pushReplacementNamed(context, 'home');
     } else {
-      showAlert(context, 'Usuario y/o Contraseña Incorrectos');
+      showAlert(context, response['info']);
     }
   }
 }
